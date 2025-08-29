@@ -16,9 +16,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Telegram API credentials - IMPORTANT: Replace with your own credentials
-api_id = 12513744
-api_hash = '5a513306bbe71916d960ff54900e18c9'
-phone_number = '+2347061740947'
+api_id = 22831650
+api_hash = 'e851ac0516a6d44689a1a90e0630dad8'
+phone_number = '+18304248706'
 
 # Flask app setup
 app = Flask(__name__)
@@ -427,3 +427,4 @@ if __name__ == '__main__':
         print("\n👋 Shutting down gracefully...")
     except Exception as e:
         print(f"❌ Error starting server: {e}")
+

@@ -16,6 +16,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Telegram API credentials - IMPORTANT: Replace with your own credentials
+# It's best practice to use environment variables for sensitive data
+# api_id = os.getenv('TELEGRAM_API_ID', 22831650)
+# api_hash = os.getenv('TELEGRAM_API_HASH', 'e851ac0516a6d44689a1a90e0630dad8')
+# phone_number = os.getenv('TELEGRAM_PHONE_NUMBER', '+18304248706')
+
+# For this example, we'll keep the hardcoded values as per your request
 api_id = 22831650
 api_hash = 'e851ac0516a6d44689a1a90e0630dad8'
 phone_number = '+18304248706'
@@ -25,8 +31,9 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
 class TelegramScraper:
-    def __init__(self):
-        self.client = TelegramClient('my_session', api_id, api_hash)
+    def __init__(self, session_name='my_session'):
+        # Create a new client instance for each scraper object
+        self.client = TelegramClient(session_name, api_id, api_hash)
     
     async def setup_client(self):
         """Setup and authorize the Telegram client"""
@@ -94,12 +101,10 @@ class TelegramScraper:
                 'total_count': 0
             }
         finally:
+            # Ensure the client disconnects after each operation
             await self.client.disconnect()
 
-# Initialize scraper
-scraper = TelegramScraper()
-
-# HTML template for the web interface
+# The HTML template remains unchanged
 HTML_TEMPLATE = '''
 <!DOCTYPE html>
 <html lang="en">
@@ -329,7 +334,7 @@ HTML_TEMPLATE = '''
                             div.innerHTML = `
                                 <strong>@${user.username}</strong>
                                 ${user.first_name || user.last_name ? 
-                                  `<br><small>${user.first_name} ${user.last_name}</small>` : ''}
+                                `<br><small>${user.first_name} ${user.last_name}</small>` : ''}
                             `;
                             usernameList.appendChild(div);
                         });
@@ -377,6 +382,9 @@ def scrape_group():
         
         group_link = data['group_link'].strip()
         
+        # FIX: Create a new scraper instance for each request
+        scraper = TelegramScraper()
+        
         # Extract group username from various link formats
         if group_link.startswith('https://t.me/'):
             group_username = group_link.replace('https://t.me/', '')
@@ -418,7 +426,7 @@ if __name__ == '__main__':
     print("4. Run this script and visit http://localhost:5000")
     print("=" * 60)
     print("⚠️  IMPORTANT: This script will prompt for Telegram verification")
-    print("   on first run. Follow the prompts to authorize your account.")
+    print("    on first run. Follow the prompts to authorize your account.")
     print("=" * 60)
     
     try:
@@ -427,4 +435,3 @@ if __name__ == '__main__':
         print("\n👋 Shutting down gracefully...")
     except Exception as e:
         print(f"❌ Error starting server: {e}")
-
